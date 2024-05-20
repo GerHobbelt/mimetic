@@ -46,6 +46,15 @@ void do_die_if(int b, const string& msg, int line)
 }
 #define _( code ) of << code << endl
 
+string stripPath(const string& fqn)
+{
+    string::size_type idx =    fqn.find_last_of('/');
+    if(idx != string::npos)
+        return string(fqn, ++idx);
+    else
+        return fqn;
+}
+
 enum {     
     MODE_RUNTEST, 
     MODE_MAIN, 
@@ -61,7 +70,7 @@ struct CmdLineOpts
     int mode;
 
     CmdLineOpts()
-    : ext(DEFAULT_RUNNER_EXT),mode(MODE_RUNTEST)
+    : ext(stripPath(DEFAULT_RUNNER_EXT)),mode(MODE_RUNTEST)
     {
     }
     void parse(int argc, char **argv)
@@ -403,7 +412,7 @@ struct GenAutomakefile
         of << endl;
 
         _( "" );
-        _( "%.cutee.cxx: $(srcdir)/%.h" );
+        _( "%.cutee.cxx: $(srcdir)/%.h cutee" );
         _( "\t$(CUTEE) -o $@ $<");
 
         _( "" );
@@ -423,14 +432,6 @@ struct GenAutomakefile
         _( "# cutee autogen: end ");
     }
 private:
-    string stripPath(const string& fqn)
-    {
-        string::size_type idx =    fqn.find_last_of('/');
-        if(idx != string::npos)
-            return string(fqn, ++idx);
-        else
-            return fqn;
-    }
     string stripExt(const string& fqn)
     {
         string::size_type idx =    fqn.find_last_of('.');
